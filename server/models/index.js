@@ -1,63 +1,59 @@
-// const sequelize = require("./../db.js");
-// const { DataTypes } = require("sequelize");
+const sequelize = require("../database");
+const { DataTypes } = require("sequelize");
 
-// const User = sequelize.define("user", {
-//   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-//   email: { type: DataTypes.STRING, allowNull: false, unique: true },
-//   password: { type: DataTypes.STRING, allowNull: false },
-//   role: { type: DataTypes.STRING, defaultValue: "teacher" },
-//   isActivated: { type: DataTypes.BOOLEAN, defaultValue: false },
-//   activationLink: { type: DataTypes.STRING },
-// });
+const User = sequelize.define("user", {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  password: { type: DataTypes.STRING, allowNull: false },
+  email: { type: DataTypes.STRING, allowNull: false, unique: true },
+  role: { type: DataTypes.STRING, defaultValue: "teacher" },
+  isActivated: { type: DataTypes.BOOLEAN, defaultValue: false },
+  activationLink: { type: DataTypes.STRING },
+});
 
-// const Profile = sequelize.define("profile", {
-//   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-//   firstName: { type: DataTypes.STRING },
-//   lastName: { type: DataTypes.STRING },
-//   age: { type: DataTypes.INTEGER },
-//   img: { type: DataTypes.STRING },
-//   gender: { type: DataTypes.ENUM("male", "female") },
-//   phone: { type: DataTypes.STRING },
-// });
+const Product = sequelize.define("product", {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  name: { type: DataTypes.STRING, unique: true },
+  type: { type: DataTypes.STRING },
+  price: { type: DataTypes.INTEGER },
+  image: { type: DataTypes.STRING },
+  description: { type: DataTypes.STRING },
+});
 
-// const School = sequelize.define("school", {
-//   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-//   name: { type: DataTypes.STRING, unique: true },
-//   address: { type: DataTypes.STRING },
-// });
+const Comment = sequelize.define("comment", {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  content: { type: DataTypes.STRING },
+});
 
-// const Lesson = sequelize.define("lesson", {
-//   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-//   name: { type: DataTypes.STRING, allowNull: false, unique: true },
-//   hours: { type: DataTypes.INTEGER },
-// });
+const Favorite = sequelize.define("favorite", {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+});
 
-// const Task = sequelize.define("task", {
-//   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-//   title: { type: DataTypes.STRING },
-//   mark: { type: DataTypes.INTEGER },
-//   completed: { type: DataTypes.BOOLEAN, defaultValue: false },
-//   deadline: { type: DataTypes.DATE },
-//   description: { type: DataTypes.TEXT },
-//   type: { type: DataTypes.STRING },
-// });
+const product_comment = sequelize.define(
+  "product_comment",
+  {},
+  { timestamps: false }
+);
+const product_favorite = sequelize.define(
+  "product_favorite",
+  {},
+  { timestamps: false }
+);
 
-// User.hasOne(Profile);
-// Profile.belongsTo(User);
+User.hasOne(Favorite);
+Favorite.belongsTo(User);
 
-// School.hasMany(User);
-// User.belongsTo(School);
+Comment.hasOne(Product, { through: product_comment });
+Product.belongsToMany(Comment, { through: product_comment });
 
-// Lesson.hasMany(Task);
-// Task.belongsTo(Lesson);
+User.hasMany(Comment);
+Comment.belongsTo(User);
 
-// User.hasMany(Task);
-// Task.belongsTo(User);
+Product.hasOne(Favorite, { through: product_favorite });
+Favorite.belongsToMany(Product, { through: product_favorite });
 
-// module.exports = {
-//   User,
-//   Profile,
-//   Lesson,
-//   Task,
-//   School,
-// };
+module.exports = {
+  User,
+  Favorite,
+  Comment,
+  Product,
+};
